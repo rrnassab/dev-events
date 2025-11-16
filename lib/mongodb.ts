@@ -38,12 +38,6 @@ if (!global.mongoose) {
  */
 const MONGODB_URI: string | undefined = process.env.MONGODB_URI;
 
-if (!MONGODB_URI) {
-  // Fail fast if the URI is not configured. This error will surface
-  // early in both development and production.
-  throw new Error('Please define the MONGODB_URI environment variable.');
-}
-
 /**
  * Establishes (or reuses) a connection to MongoDB using Mongoose.
  *
@@ -60,6 +54,11 @@ export async function connectToDatabase(): Promise<typeof mongoose> {
 
   // If a connection is already in progress, reuse the promise.
   if (!cached.promise) {
+    if (!MONGODB_URI) {
+      // Fail fast if the URI is not configured. This error will surface
+      // early in both development and production.
+      throw new Error('Please define the MONGODB_URI environment variable.');
+    }
     const options: Parameters<typeof mongoose.connect>[1] = {
       // Add any mongoose options you need here, for example:
       // dbName: 'my-database-name',
